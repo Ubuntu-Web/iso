@@ -132,13 +132,13 @@ echo ""
 echo "Installing papirus-launcher-icon"
 echo "================================"
 echo ""
-apt-get install -y ./papirus-launcher-icon_1.0web4_amd64.deb ./papirus-light-launcher-icon_1.0web4_amd64.deb ./papirus-dark-launcher-icon_1.0web4_amd64.deb
+apt-get install -y papirus-launcher-icon papirus-light-launcher-icon papirus-dark-launcher-icon
 echo ""
 
 echo "Installing uweb-transitional"
 echo "============================"
 echo ""
-apt-get install -y ./uweb-transitional_1.0web1_amd64.deb
+apt-get install -y uweb-transitional
 echo ""
 
 echo "Changing ubiquity-slideshow"
