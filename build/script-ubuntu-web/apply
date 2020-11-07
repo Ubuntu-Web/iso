@@ -110,16 +110,6 @@ curl -L -O 'https://github.com/Ubuntu-Web/soundcloud/releases/latest/download/do
 wappinst ./download.wapp
 rm -f ./download.wapp
 echo ""
-echo "- Google Classroom"
-curl -L -O 'https://github.com/Ubuntu-Web/google-classroom/releases/latest/download/download.wapp' &>/dev/null
-wappinst ./download.wapp
-rm -f ./download.wapp
-echo ""
-echo "- YouTube"
-curl -L -O 'https://github.com/Ubuntu-Web/youtube/releases/latest/download/download.wapp' &>/dev/null
-wappinst ./download.wapp
-rm -f ./download.wapp
-echo ""
 echo "Installed default web apps."
 echo ""
 
