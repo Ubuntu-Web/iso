@@ -1,0 +1,233 @@
+#!/bin/bash
+
+remove_all() {
+    # This function is required as APT does not remove multiple
+    # packages in one command if the packages are not already
+    # installed.
+
+    for package in $@; do
+        apt-get purge -y $package
+    done
+}
+
+echo "Getting ready"
+echo "============="
+echo ""
+apt-get update && apt-get upgrade -y
+test ! -f /bin/add-apt-repository && apt-get install -y software-properties-common
+add-apt-repository universe -y
+add-apt-repository multiverse -y
+add-apt-repository ppa:ubuntuweb/main -y --no-update
+mv /etc/apt/sources.list.d/ubuntuweb-ubuntu-**-**.list /etc/apt/sources.list.d/ubuntuweb.list
+apt-get update
+echo ""
+
+echo "Adding universe and multiverse repositories"
+echo "==========================================="
+echo ""
+add-apt-repository -y universe multiverse
+echo ""
+
+echo "Removing ubuntu-session and installing gnome-session"
+echo "===================================================="
+echo ""
+apt-get purge -y ubuntu-session
+apt-get install -y gnome-session
+echo ""
+
+echo "Installing anbox"
+echo "================"
+echo ""
+apt-get install -y anbox anbox-image anbox-dkms
+dkms install anbox-ashmem/1 -k $(ls -Art /lib/modules | tail -n 1)
+dkms install anbox-binder/1 -k $(ls -Art /lib/modules | tail -n 1)
+echo ""
+
+echo "Intalling dash-to-panel"
+echo "======================="
+echo ""
+apt-get install -y dash-to-panel
+echo ""
+
+echo "Intalling ubuntu-web-theme-meta"
+echo "==============================="
+echo ""
+apt-get install -y ubuntu-web-theme-meta --no-install-recommends
+echo ""
+
+echo "Installing ubuntu-web-settings"
+echo "=============================="
+echo ""
+apt-get install -y ubuntu-web-default-settings
+echo ""
+
+echo "Installing winst and wadk"
+echo "========================="
+echo ""
+apt-get install -y winst wadk
+echo ""
+
+echo "Intalling wapprmgui, xterm and pass"
+echo "==================================="
+apt-get install -y wapprmgui xterm pass
+echo ""
+
+echo "Installing curl"
+echo "==============="
+apt-get install -y curl
+echo ""
+
+echo "Installing default web apps"
+echo "==========================="
+echo ""
+echo "- Open Web Store"
+curl -L -O 'https://github.com/Ubuntu-Web/open-web-store/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- Twitter"
+curl -L -O 'https://github.com/Ubuntu-Web/twitter/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- Mastodon.online"
+curl -L -O 'https://github.com/Ubuntu-Web/mastodon-online/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- Opendesktop"
+curl -L -O 'https://github.com/Ubuntu-Web/opendesktop/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- Opendesktop Files"
+curl -L -O 'https://github.com/Ubuntu-Web/opendesktop-files/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- SoundCloud"
+curl -L -O 'https://github.com/Ubuntu-Web/soundcloud/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- Google Classroom"
+curl -L -O 'https://github.com/Ubuntu-Web/google-classroom/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "- YouTube"
+curl -L -O 'https://github.com/Ubuntu-Web/youtube/releases/latest/download/download.wapp' &>/dev/null
+wappinst ./download.wapp
+rm -f ./download.wapp
+echo ""
+echo "Installed default web apps."
+echo ""
+
+echo "Changing boot screen (plymouth) logo"
+echo "===================================="
+echo ""
+apt-get install -y uweb-plymouth
+echo ""
+
+echo "Installing papirus-launcher-icon"
+echo "================================"
+echo ""
+apt-get install -y ./papirus-launcher-icon_1.0web4_amd64.deb ./papirus-light-launcher-icon_1.0web4_amd64.deb ./papirus-dark-launcher-icon_1.0web4_amd64.deb
+echo ""
+
+echo "Installing uweb-transitional"
+echo "============================"
+echo ""
+apt-get install -y ./uweb-transitional_1.0web1_amd64.deb
+echo ""
+
+echo "Changing ubiquity-slideshow"
+echo "==========================="
+echo ""
+apt-get purge -y ubiquity-slideshow-ubuntu
+apt-get install -y ubiquity-slideshow-ubuntu-web
+echo ""
+
+echo "Adding wallpapers"
+echo "================="
+echo ""
+apt-get install -y ubuntu-web-backgrounds
+echo ""
+
+echo "Removing and putting back snapd to remove all snaps"
+echo "==================================================="
+echo ""
+apt-get purge -y snapd
+apt-get install -y snapd
+echo ""
+
+echo "Installing gnome-software"
+echo "========================="
+echo ""
+apt-get install -y gnome-software gnome-software-plugin-snap fwupd --no-install-recommends
+echo ""
+
+echo "Installing nautilus-nextcloud"
+echo "============================="
+echo ""
+apt-get install -y nautilus-nextcloud
+echo ""
+
+echo "Hiding apps and gnome-ubuntu-panel"
+echo "=================================="
+echo ""
+mkdir -p /etc/skel/.local /etc/skel/.local/share /etc/skel/.local/share/applications
+cat <<'EOF' >/etc/skel/.local/share/applications/yad-icon-browser.desktop
+[Desktop Entry]
+Encoding=UTF-8
+Name=Icon Browser
+Comment=Inspect GTK Icon Theme
+Categories=GTK;Development;
+Exec=yad-icon-browser
+Icon=yad
+Terminal=false
+Type=Application
+StartupNotify=true
+Hidden=true
+EOF
+cat <<'EOF' >/etc/skel/.local/share/applications/debian-xterm.desktop
+[Desktop Entry]
+Name=XTerm
+#GenericName=Terminal
+Comment=standard terminal emulator for the X window system
+Exec=xterm
+Terminal=false
+Type=Application
+Hidden=true
+#Encoding=UTF-8
+Icon=mini.xterm
+Categories=System;TerminalEmulator;
+Keywords=shell;prompt;command;commandline;cmd;
+X-Desktop-File-Install-Version=0.24
+EOF
+cat <<'EOF' >/etc/skel/.local/share/applications/debian-uxterm.desktop
+[Desktop Entry]
+Name=UXTerm
+#GenericName=Terminal
+Comment=xterm wrapper for Unicode environments
+Exec=uxterm
+Terminal=false
+Type=Application
+Hidden=true
+#Encoding=UTF-8
+Icon=mini.xterm
+Categories=System;TerminalEmulator;
+Keywords=shell;prompt;command;commandline;cmd;
+X-Desktop-File-Install-Version=0.24
+EOF
+cp -r /etc/skel/.local ~/.local
+
+echo "Cleaning up"
+echo "==========="
+echo ""
+remove_all aisleriot remmina rhythmbox usb-creator-gtk transmission gnome-characters yelp gnome-initial-setup thunderbird libreoffice-common gnome-font-viewer apport whoopsie evince baobab gnome-mines gnome-shell-extension-prefs gnome-sudoku seahorse libgnome-games-support-common deja-dup gnome-disk-utility gnome-mahjongg
+rm -f /usr/libexec/gnome-initial-setup /usr/share/applications/gnome-initial-setup.desktop
+apt-get autoremove --purge -y
+find /var/log/ -maxdepth 2 -type f -delete
+rm -rf /etc/machine-id /var/lib/dbus/machine-id ~/.cache/ ~/.config/ ~/.dbus/ /tmp/*
+history -c
